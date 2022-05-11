@@ -11,48 +11,90 @@ import pandas as pd
 # import numpy as np
 # import matplotlib.pyplot as plt
 # from scipy.optimize import curve_fit
-# from datetime import datetime
+from datetime import datetime
+from pathlib import Path
+
+
 #
 # from sklearn.metrics import mean_squared_error
 # from sklearn.model_selection import train_test_split
+#
+# def create_timestamp():
+#     df_train = pd.read_csv( 'store-sales-time-series-forecasting/train.csv')
+#     df_train['timestamp'] = df_train['date'].map(lambda x:  int(round(datetime.strptime(x, '%Y-%m-%d').timestamp())), na_action=None)
+#     filepath = Path('store-sales-time-series-forecasting/train_timestamp.csv')
+#     df_train.to_csv(filepath)
+
 
 def extract_data():
-    df = pd.read_csv( 'store-sales-time-series-forecasting/transactions.csv')
-    print(df)
+    df_transactions = pd.read_csv( 'store-sales-time-series-forecasting/transactions.csv')
+    df_train = pd.read_csv( 'store-sales-time-series-forecasting/train_timestamp.csv')
+    df_sample_submission = pd.read_csv( 'store-sales-time-series-forecasting/sample_submission.csv')
+    df_test = pd.read_csv( 'store-sales-time-series-forecasting/test.csv')
 
-    # ##CONVERT TIMESTAMP TO INT FOR TRAIN
-    # df['@timestamp'] = df['@timestamp'].map(lambda x:  int(round(datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%f').timestamp())), na_action=None)
-    # df['timestamp_min_max'] = (df['@timestamp'] - df['@timestamp'].min()) / (
-    # df['@timestamp'].max() - df['@timestamp'].min())
-    #
-    # ###CHANGE STAKE FEATURE TO LOG BASE 10
-    # df['stake'] = df['stake'].map(lambda x:  math.log(x, 10) if x != 0 else 0, na_action=None)
-    #
-    # ### REMOVE 0 FOR CALCULATION OF GROUP VARIANCE INVESTIGATION (prevents errors)
-    # df['stake_no_zero'] = df['stake'].loc[~(df['stake'] == 0)]
-    # df['pblocks_1h_no_zero'] = df['pblocks_1h'].loc[~(df['pblocks_1h'] == 0)]
-    # df['wblocks_1h_no_zero'] = df['wblocks_1h'].loc[~(df['wblocks_1h'] == 0)]
-    # df['max_s1_1h_no_zero'] = df['max_s1_1h'].loc[~(df['max_s1_1h'] == 0)]
-    #
-    #
-    # df['stake_binary'] = df['stake'].map(lambda x:  0 if x == 0 else 1, na_action=None)
-    # df['status'] = df['status'].map(lambda x: 1 if x == 'Online' else 0, na_action=None)
-    #
-    # ###ORDER USERS BY STAKE RANK
-    # address_order = df[['stake', 'address']].groupby(by=["address"], dropna=False).apply(
-    #     lambda x: x.mean()).sort_values('stake').index
-    #
-    #
-    # sorterIndex = dict(zip(address_order, range(len(address_order))))
-    # df['stake_rank'] = df['address'].map(sorterIndex)
-    #
-    #
-    # # STAKE RANK NORMILZATION FEATURE
-    # df['stake_rank_minmax'] = (df['stake_rank'] - df['stake_rank'].min()) / (
-    # df['stake_rank'].max() - df['stake_rank'].min())
-    # return df
+
+    # create_features:
+    # -sales yesterday
+    # -sales last_week
+    # -sales_ last_month
+    # -sales_last_year
+
+    return df_train, df_sample_submission, df_test
+
+def explore_data(df):
+    df_store_1 = df.loc[(df['store_nbr'] == 2) & (df['timestamp'] == 1405051200)]
+    # df_store_1 = df.loc[(df['timestamp'] == 1405224000)]
+    # df_store_1 = df.loc[(df['store_nbr'] == 3)]
+
+    ids = df_store_1['id']
+    dates = df_store_1['timestamp']
+    stores = df_store_1['timestamp']
+
+    ids_all = df['id']
+    stores_all = df['store_nbr']
+    dates_all = df['timestamp']
+    family_all = df['family']
+
+    print(len(ids.value_counts()))
+    print(len(ids))
+
+    print("ALL")
+    print(len(ids_all.value_counts()))
+    print(len(dates_all.value_counts()))
+    print(len(stores_all.value_counts()))
+    print(len(family_all.value_counts()))
+
+    print("****")
+
+    print((dates_all.value_counts()))
+
+
+
+    print(len(dates.value_counts()))
+    print((dates.value_counts()))
+    print(len(dates))
+
+
+def explore_sample_submission(df):
+    ids = df['id']
+    print(len(ids.value_counts()))
+    print(len(ids))
+
+
+def explore_date_data(df):
+    print(df[['timestamp', 'date']].sort_values('date'))
+
+
+
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    extract_data()
+    # create_timestamp()
+    df_train, df_sample_submission, df_test = extract_data()
+    # explore_data(df_train)
+    # print("***")
+    # explore_sample_submission(df_sample_submission)
+    explore_date_data(df_train)
+
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
